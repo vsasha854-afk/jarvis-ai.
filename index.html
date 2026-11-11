@@ -1,1 +1,142 @@
 
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#050b18">
+<title>JARVIS AI</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:radial-gradient(circle at center,#10294b,#050b18 65%);
+ color:#bceaff;font-family:Arial,sans-serif;
+ min-height:100vh;text-align:center;
+ display:flex;align-items:center;justify-content:center;
+}
+.app{width:100%;max-width:480px;padding:25px 20px}
+h1{letter-spacing:9px;color:#66d9ff;font-size:30px}
+.sub{letter-spacing:4px;color:#588eae;font-size:11px}
+.core{
+ width:210px;height:210px;border-radius:50%;
+ margin:45px auto 25px;
+ border:2px solid #39cfff;
+ box-shadow:0 0 20px #00aaff,0 0 65px #0066aa,inset 0 0 35px #007bbd;
+ display:flex;align-items:center;justify-content:center;
+ animation:pulse 3s infinite;
+}
+.core span{font-size:55px;color:#8ceaff;text-shadow:0 0 25px #00bfff}
+@keyframes pulse{
+ 50%{box-shadow:0 0 40px #00cfff,0 0 90px #0077bb,inset 0 0 50px #0099cc}
+}
+button{
+ background:#092440;color:#83e5ff;border:1px solid #22bfff;
+ border-radius:30px;padding:16px 30px;font-size:16px;
+ box-shadow:0 0 15px #0077aa;margin:8px;
+}
+button:active{background:#12618a}
+#status{color:#63cfff;min-height:24px;margin:20px}
+.panel{
+ background:#07172a;border:1px solid #16466b;
+ border-radius:15px;padding:15px;text-align:left;
+ min-height:100px;max-height:210px;overflow:auto;
+ font-size:14px;line-height:1.6;
+}
+small{color:#5286a6}
+</style>
+</head>
+<body>
+<div class="app">
+ <h1>J.A.R.V.I.S.</h1>
+ <div class="sub">PERSONAL ARTIFICIAL INTELLIGENCE</div>
+
+ <div class="core"><span>◉</span></div>
+
+ <div id="status">СИСТЕМА ГОТОВА</div>
+
+ <button onclick="listen()">🎙 ГОВОРИТИ</button>
+ <button onclick="speak('Я до ваших послуг.')">🔊 ТЕСТ ГОЛОСУ</button>
+
+ <div class="panel" id="chat">
+  <small>JARVIS SYSTEM</small><br>
+  Вітаю. Я готовий до роботи.
+ </div>
+</div>
+
+<script>
+const statusBox=document.getElementById('status');
+const chat=document.getElementById('chat');
+
+function say(text){
+ chat.innerHTML += '<br><br><b>JARVIS:</b> '+text;
+ chat.scrollTop=chat.scrollHeight;
+ speak(text);
+}
+
+function speak(text){
+ if(!('speechSynthesis' in window)){
+  statusBox.textContent='Голос недоступний';
+  return;
+ }
+ speechSynthesis.cancel();
+ const voice=new SpeechSynthesisUtterance(text);
+ voice.lang='uk-UA';
+ voice.rate=0.95;
+ speechSynthesis.speak(voice);
+}
+
+function listen(){
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR){
+  statusBox.textContent='Розпізнавання недоступне. Спробуйте Chrome.';
+  return;
+ }
+ const recognition=new SR();
+ recognition.lang='uk-UA';
+ recognition.interimResults=false;
+ statusBox.textContent='СЛУХАЮ ВАС...';
+ recognition.onresult=(event)=>{
+  const command=event.results[0][0].transcript.toLowerCase();
+  chat.innerHTML+='<br><br><b>ВИ:</b> '+command;
+  processCommand(command);
+ };
+ recognition.onerror=()=>{
+  statusBox.textContent='Не вдалося розпізнати голос';
+ };
+ recognition.onend=()=>{
+  if(statusBox.textContent==='СЛУХАЮ ВАС...')
+   statusBox.textContent='СИСТЕМА ГОТОВА';
+ };
+ recognition.start();
+}
+
+function processCommand(command){
+ statusBox.textContent='ОБРОБКА КОМАНДИ...';
+
+ if(command.includes('привіт')){
+  say('Вітаю. Джарвіс до ваших послуг.');
+ }
+ else if(command.includes('як справи')){
+  say('Усі системи працюють. Готовий допомагати.');
+ }
+ else if(command.includes('час')){
+  say('Зараз '+new Date().toLocaleTimeString('uk-UA'));
+ }
+ else if(command.includes('дата')){
+  say('Сьогодні '+new Date().toLocaleDateString('uk-UA'));
+ }
+ else if(command.includes('хто ти')){
+  say('Я Джарвіс, ваш персональний цифровий помічник.');
+ }
+ else if(command.includes('дякую')){
+  say('Завжди радий допомогти.');
+ }
+ else{
+  say('Я почув вашу команду. Для розумних відповідей потрібно підключити мій штучний інтелект.');
+ }
+ statusBox.textContent='СИСТЕМА ГОТОВА';
+}
+</script>
+</body>
+</html>
+
