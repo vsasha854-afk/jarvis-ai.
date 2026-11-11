@@ -136,6 +136,39 @@ function processCommand(command){
  }
  statusBox.textContent='СИСТЕМА ГОТОВА';
 }
+</script><script>
+function setJarvisVoice() {
+  const voices = speechSynthesis.getVoices();
+
+  const ukrainianVoices = voices.filter(v =>
+    v.lang.toLowerCase().startsWith("uk")
+  );
+
+  if (ukrainianVoices.length > 0) {
+    window.jarvisVoice = ukrainianVoices.find(v =>
+      /male|чолов/i.test(v.name)
+    ) || ukrainianVoices[0];
+  }
+}
+
+speechSynthesis.onvoiceschanged = setJarvisVoice;
+setJarvisVoice();
+
+function jarvisSpeak(text) {
+  speechSynthesis.cancel();
+
+  const msg = new SpeechSynthesisUtterance(text);
+  msg.lang = "uk-UA";
+  msg.rate = 0.88;
+  msg.pitch = 0.78;
+  msg.volume = 1;
+
+  if (window.jarvisVoice) {
+    msg.voice = window.jarvisVoice;
+  }
+
+  speechSynthesis.speak(msg);
+}
 </script>
 </body>
 </html>
